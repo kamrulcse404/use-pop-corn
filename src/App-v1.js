@@ -1,4 +1,4 @@
-import { Children, useEffect, useState } from "react";
+import { Children, useState } from "react";
 
 const tempMovieData = [
   {
@@ -50,42 +50,9 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const KEY = "1d40f906";
-
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=interstellar`
-        );
-
-        if (!response.ok) {
-          throw new Error("Something went wrong with fetching data");
-        }
-
-        const data = await response.json();
-        if (data.Response === "False") {
-          throw new Error("Movie not found");
-        }
-        if (data.Search) {
-          setMovies(data.Search);
-        }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <>
@@ -95,13 +62,7 @@ export default function App() {
       </Navbar>
       <Main>
         <Box>
-          {isLoading ? (
-            <Loader />
-          ) : error ? (
-            <ErrorMessage message={error} />
-          ) : (
-            <MovieList movies={movies} />
-          )}
+          <MovieList movies={movies} />
         </Box>
         {/* <WatchedBox /> */}
         <Box>
@@ -110,18 +71,6 @@ export default function App() {
         </Box>
       </Main>
     </>
-  );
-}
-
-function Loader() {
-  return <p className="loader">Loading...</p>;
-}
-
-function ErrorMessage({ message }) {
-  return (
-    <p className="error">
-      <span>😬</span> {message}
-    </p>
   );
 }
 
@@ -180,6 +129,28 @@ function Box({ children }) {
     </div>
   );
 }
+
+// function WatchedBox() {
+//   const [watched, setWatched] = useState(tempWatchedData);
+//   const [isOpen2, setIsOpen2] = useState(true);
+
+//   return (
+//     <div className="box">
+//       <button
+//         className="btn-toggle"
+//         onClick={() => setIsOpen2((open) => !open)}
+//       >
+//         {isOpen2 ? "–" : "+"}
+//       </button>
+//       {isOpen2 && (
+//         <>
+//           <WatchedSummary watched={watched} />
+//           <WatchedMoviesList watched={watched} />
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 
 function MovieList({ movies }) {
   return (
